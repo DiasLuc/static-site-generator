@@ -18,13 +18,13 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             if first_delimiter_index > 0:
                 new_nodes.append(TextNode(remaining_text[0:first_delimiter_index], TextType.TEXT))
 
-            second_delimiter_index = remaining_text.find(delimiter, first_delimiter_index + 1)
+            second_delimiter_index = remaining_text.find(delimiter, first_delimiter_index + len(delimiter))
             if second_delimiter_index == -1:
                 raise Exception("Missing Closing Delimiter")
             
-            new_nodes.append(TextNode(remaining_text[first_delimiter_index+1:second_delimiter_index], text_type))
+            new_nodes.append(TextNode(remaining_text[first_delimiter_index+len(delimiter):second_delimiter_index], text_type))
                 
-            remaining_text = remaining_text[second_delimiter_index +1:]
+            remaining_text = remaining_text[second_delimiter_index +len(delimiter):]
 
         if remaining_text:
             new_nodes.append(TextNode(remaining_text, TextType.TEXT))
@@ -82,3 +82,17 @@ def split_nodes_link(old_nodes):
         if remaining_text:
             new_nodes.append(TextNode(remaining_text, TextType.TEXT))    
     return new_nodes
+
+def text_to_textnodes(text):
+    text_node = [TextNode(text, TextType.TEXT)]
+    images_pulled = split_nodes_image(text_node)
+    # print("After images:", images_pulled)
+    links_pulled = split_nodes_link(images_pulled)
+    # print("After links:", links_pulled)
+    bold_pulled = split_nodes_delimiter(links_pulled, "**", TextType.BOLD)
+    # print("After bold:", bold_pulled)
+    italic_pulled = split_nodes_delimiter(bold_pulled, "*", TextType.ITALIC)
+    # print("After italic:", italic_pulled)
+    code_pulled = split_nodes_delimiter(italic_pulled, "`", TextType.CODE)
+    # print("After code:", code_pulled)
+    return code_pulled
