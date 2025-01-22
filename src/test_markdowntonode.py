@@ -6,7 +6,8 @@ from markdowntonode import (
     extract_markdown_links,
     split_nodes_image,
     split_nodes_link,
-    text_to_textnodes
+    text_to_textnodes,
+    markdown_to_blocks
 )
 from textnode import TextType, TextNode
 
@@ -161,20 +162,42 @@ class TestTextToHTMLNode(unittest.TestCase):
         assert split_nodes == expected
 
     # Test text_to_textnodes()
-    expected = [
-        TextNode("This is ", TextType.TEXT),
-        TextNode("text", TextType.BOLD),
-        TextNode(" with an ", TextType.TEXT),
-        TextNode("italic", TextType.ITALIC),
-        TextNode(" word and a ", TextType.TEXT),
-        TextNode("code block", TextType.CODE),
-        TextNode(" and an ", TextType.TEXT),
-        TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
-        TextNode(" and a ", TextType.TEXT),
-        TextNode("link", TextType.LINK, "https://boot.dev"),
-    ]
+    def test_text_to_textnodes(self):
+        expected = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
 
-    test_text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-    actual_result = text_to_textnodes(test_text)
-    assert expected == actual_result
-    
+        test_text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        actual_result = text_to_textnodes(test_text)
+        assert expected == actual_result
+
+    # Test markdown_to_blocks
+    def test_markdown_to_blocks_multiline(self):
+        markdown = '''# This is a heading
+
+This is a paragraph of text. It has some **bold** and *italic* words inside of it.
+
+* This is the first list item in a list block
+* This is a list item
+* This is another list item'''
+
+        expected = ['# This is a heading', 'This is a paragraph of text. It has some **bold** and *italic* words inside of it.', '* This is the first list item in a list block\n* This is a list item\n* This is another list item']
+        result = markdown_to_blocks(markdown)
+        assert expected == result
+
+    def test_markdown_to_blocks_singleline(self):
+        markdown = "  # Header 1  \n\n\nSome text here.  \n\n\n\n  * List item 1 \n* List item 2  "
+        expected = ['# Header 1', 'Some text here.', '* List item 1 \n* List item 2']
+        result = markdown_to_blocks(markdown)
+        print(f"EXPECT: {expected}")
+        print(f"RESULT: {result}")
+        assert expected == result
