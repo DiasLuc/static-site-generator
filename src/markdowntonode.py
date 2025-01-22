@@ -99,7 +99,6 @@ def text_to_textnodes(text):
 
 def markdown_to_blocks(markdown):
     blocks =  markdown.split(f"\n\n")
-    print(blocks)
     modified_blocks = []
     for block in blocks:
        modded_block = block.strip()
