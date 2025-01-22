@@ -1,6 +1,8 @@
 import unittest
-from markdownblocks import markdown_to_blocks
-
+from markdownblocks import (
+    markdown_to_blocks,
+    block_to_block_type
+)
 
 class TestMarkdownToHTML(unittest.TestCase):
     # Test markdown_to_blocks
@@ -64,3 +66,24 @@ This is the same paragraph on a new line
                 "* This is a list\n* with items",
             ],
         )
+
+    # block_to_block_type() Tests
+    def test_block_to_block_type_paragraph(self):
+        # Should be "paragraph"
+        expected = "paragraph"
+        result = block_to_block_type("Just a normal paragraph")
+        assert expected == result
+    def test_block_to_block_type_ordered_list(self):
+        # Should be "ordered_list"
+        expected = "ordered_list"
+        result = block_to_block_type("1. First\n2. Second\n3. Third")
+    def test_block_to_block_type_paragraph_wrong_numbering(self):
+        # Should be "paragraph" (wrong numbering)
+        expected = "paragraph"
+        result = block_to_block_type("1. First\n3. Second\n4. Third")
+        assert expected == result
+    def test_block_to_block_type_paragraph_single_item(self):
+        # Should be "paragraph" (single item)
+        expected = "paragraph"
+        result = block_to_block_type("1. First")
+        assert expected == result

@@ -97,11 +97,3 @@ def text_to_textnodes(text):
     # print("After code:", code_pulled)
     return code_pulled
 
-def markdown_to_blocks(markdown):
-    blocks =  markdown.split(f"\n\n")
-    modified_blocks = []
-    for block in blocks:
-       modded_block = block.strip()
-       if modded_block != "":
-           modified_blocks.append(modded_block)
-    return modified_blocks
