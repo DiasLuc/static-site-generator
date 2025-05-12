@@ -91,7 +91,7 @@ def text_to_textnodes(text):
     # print("After links:", links_pulled)
     bold_pulled = split_nodes_delimiter(links_pulled, "**", TextType.BOLD)
     # print("After bold:", bold_pulled)
-    italic_pulled = split_nodes_delimiter(bold_pulled, "*", TextType.ITALIC)
+    italic_pulled = split_nodes_delimiter(bold_pulled, "_", TextType.ITALIC)
     # print("After italic:", italic_pulled)
     code_pulled = split_nodes_delimiter(italic_pulled, "`", TextType.CODE)
     # print("After code:", code_pulled)
