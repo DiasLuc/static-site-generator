@@ -4,10 +4,10 @@ from markdownblocks import markdown_to_html_node
 from pathlib import Path
 import sys
 def main():
-    if not sys.argv[0]:
+    if not sys.argv[1]:
         basepath = '/'
     else:
-        basepath = sys.argv[0]
+        basepath = sys.argv[1]
 
     new_text_node = TextNode('This is a text node', TextType.BOLD,'https://www.boot.dev')
     static_dir = './static/'
