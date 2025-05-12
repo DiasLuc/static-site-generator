@@ -2,18 +2,24 @@ from textnode import TextNode, TextType
 import os, shutil
 from markdownblocks import markdown_to_html_node
 from pathlib import Path
+import sys
 def main():
+    if not sys.argv[0]:
+        basepath = '/'
+    else:
+        basepath = sys.argv[0]
+
     new_text_node = TextNode('This is a text node', TextType.BOLD,'https://www.boot.dev')
     static_dir = './static/'
-    public_dir = './public/'
+    public_dir = './docs/'
     copy_content(static_dir, public_dir)
     extract_title('src/content/index.md')
 
     content_loc = 'src/content/'
     template_loc = 'template.html'
-    dest_loc = 'public/'
+    dest_loc = 'docs/'
     
-    generate_pages_recursive(content_loc, template_loc, dest_loc)
+    generate_pages_recursive(content_loc, template_loc, dest_loc, basepath)
 
 
 
@@ -47,7 +53,7 @@ def extract_title(markdown):
                 return line[2:].strip()
         raise Exception("There is no h1 header")
             
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     # print(f'Generating page from {from_path} to {dest_path} using {template_path}')
     from_file = open(from_path, 'r')
     markdown = from_file.read()
@@ -66,6 +72,10 @@ def generate_page(from_path, template_path, dest_path):
     title = extract_title(from_path)
     updated_template = template.replace(' {{ Title }} ', title)
     updated_template = updated_template.replace('{{ Content }}', markdown_as_html)
+
+    #C5 L5
+    updated_template = updated_template.replace('href="/', f'href="{basepath}')
+    updated_template = updated_template.replace('src="/', f'src="{basepath}')
     
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
@@ -75,7 +85,7 @@ def generate_page(from_path, template_path, dest_path):
     
     index_f.close()
 # C5 L3
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
     
     content_dir_list = os.listdir(dir_path_content)
     for item in content_dir_list:
@@ -89,10 +99,10 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
             
             
 
-            generate_page(item_path, template_path,destination_path)
+            generate_page(item_path, template_path,destination_path, basepath)
         if os.path.isdir(item_path):
             new_dest = os.path.join(dest_dir_path,item)
             os.makedirs(new_dest, exist_ok=True)
             new_source = os.path.join(dir_path_content,item)
-            generate_pages_recursive(new_source, template_path, new_dest)
+            generate_pages_recursive(new_source, template_path, new_dest, basepath)
 main()
